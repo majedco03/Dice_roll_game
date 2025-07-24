@@ -1,16 +1,24 @@
-# dice_roll_game
+# 📱 Project Title
 
-A new Flutter project.
+Dice Roll Game is a simple and fun project developed using Flutter & Dart as part of my learning journey in mastering the fundamentals of programming. The game simulates a classic dice-rolling experience with support for multiple players (locally) and additional features to enhance gameplay.
 
-## Getting Started
+The main goal of this project is to practice and strengthen my understanding of Flutter concepts, especially the use of StatelessWidget and StatefulWidget.
+---
 
-This project is a starting point for a Flutter application.
+## 🔧 Features
 
-A few resources to get you started if this is your first Flutter project:
+- ✅ Clear and responsive UI
+- 🎮 Multiplayer support (e.g., 1 to 4 players on same device)
+- 🎲 Random dice generation
+- 🧠 Game logic (scoring, winner detection)
+- 🔁 Reset / Restart option
+- 🔁 Multi-Round Gameplay with Score Tracking
+- 🛠 Built using Flutter & Dart
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📸 Screenshots
+
+- Will be added after finishing the project
+
+---
