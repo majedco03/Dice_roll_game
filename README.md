@@ -7,7 +7,6 @@ The main goal of this project is to practice and strengthen my understanding of 
 
 ## 🔧 Features
 
-- ✅ Clear and responsive UI
 - 🎮 Multiplayer support (e.g., 1 to 4 players on same device)
 - 🎲 Random dice generation
 - 🧠 Game logic (scoring, winner detection)
