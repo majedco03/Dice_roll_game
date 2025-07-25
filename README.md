@@ -17,9 +17,8 @@ The main goal of this project is to practice and strengthen my understanding of 
 ---
 
 ## 📸 Screenshots
-
-> ![alt text](image.png)
-> ![alt text](image-1.png)
-> ![alt text](image-2.png)
+> <img src="image.png" width="300" />
+> <img src="image-1.png" width="300" />
+> <img src="image-2.png" width="300" />
 
 ---
