@@ -25,6 +25,39 @@ class _DiceGameState extends State<DiceGame> {
     });
   }
 
+  void rollDices() {
+    setState(() {
+      if (numOfPlayers == 1) {
+        var diceRoll = randomizer.nextInt(6) + 1;
+        activeDice1 = 'assets/images/dice-$diceRoll.png';
+      }
+      if (numOfPlayers == 2) {
+        var diceRoll = randomizer.nextInt(6) + 1;
+        activeDice1 = 'assets/images/dice-$diceRoll.png';
+        diceRoll = randomizer.nextInt(6) + 1;
+        activeDice2 = 'assets/images/dice-$diceRoll.png';
+      }
+      if (numOfPlayers == 3) {
+        var diceRoll = randomizer.nextInt(6) + 1;
+        activeDice1 = 'assets/images/dice-$diceRoll.png';
+        diceRoll = randomizer.nextInt(6) + 1;
+        activeDice2 = 'assets/images/dice-$diceRoll.png';
+        diceRoll = randomizer.nextInt(6) + 1;
+        activeDice3 = 'assets/images/dice-$diceRoll.png';
+      }
+      if (numOfPlayers == 4) {
+        var diceRoll = randomizer.nextInt(6) + 1;
+        activeDice1 = 'assets/images/dice-$diceRoll.png';
+        diceRoll = randomizer.nextInt(6) + 1;
+        activeDice2 = 'assets/images/dice-$diceRoll.png';
+        diceRoll = randomizer.nextInt(6) + 1;
+        activeDice3 = 'assets/images/dice-$diceRoll.png';
+        diceRoll = randomizer.nextInt(6) + 1;
+        activeDice4 = 'assets/images/dice-$diceRoll.png';
+      }
+    });
+  }
+
   @override
   Widget build(context) {
     return Column(
@@ -91,6 +124,7 @@ class _DiceGameState extends State<DiceGame> {
           ],
           onChanged: changeNumOfPlayers,
         ),
+        TextButton(onPressed: rollDices, child: Text("Roll Dice")),
       ],
     );
   }
