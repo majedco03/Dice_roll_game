@@ -117,7 +117,7 @@ class _DiceGameState extends State<DiceGame> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Align(
-          alignment: Alignment.centerLeft,
+          alignment: Alignment.centerRight,
           child: Padding(
             padding: const EdgeInsets.only(left: 12, top: 12, bottom: 20),
             child: Column(
