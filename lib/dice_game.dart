@@ -2,6 +2,7 @@ import 'package:dice_roll_game/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:dice_roll_game/result_screen.dart';
 
 final randomizer = Random();
 
@@ -34,7 +35,8 @@ class _DiceGameState extends State<DiceGame> {
     });
   }
 
-  //update the score for the current player
+  //update the score for the current player and check if they have won
+  // If a player reaches 120 points, navigate to the result screen
   void updateScore(int player) {
     int points = rollDice();
     setState(() {
@@ -45,9 +47,18 @@ class _DiceGameState extends State<DiceGame> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            //TODO: Create a ResultScreen widget to display the winner
-            // Right now, it just goes back to the home screen
-            builder: (context) => HomeScreen(),
+            builder: (context) => ResultScreen(
+              numOfPlayers: widget.numOfPlayers,
+              player1: 'Player 1',
+              score1: playerScores[1]!,
+              player2: widget.numOfPlayers > 1 ? 'Player 2' : null,
+              score2: widget.numOfPlayers > 1 ? playerScores[2] : null,
+              player3: widget.numOfPlayers > 2 ? 'Player 3' : null,
+              score3: widget.numOfPlayers > 2 ? playerScores[3] : null,
+              player4: widget.numOfPlayers > 3 ? 'Player 4' : null,
+              score4: widget.numOfPlayers > 3 ? playerScores[4] : null,
+              winnerName: 'Player $player',
+            ),
           ),
         );
       }
