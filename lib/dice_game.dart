@@ -1,229 +1,208 @@
+import 'package:dice_roll_game/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:dice_roll_game/result_screen.dart';
 
 final randomizer = Random();
-final List<String> items = ['1 Player', '2 Players', '3 Players', '4 Players'];
 
 class DiceGame extends StatefulWidget {
-  const DiceGame({super.key});
+  const DiceGame({super.key, required this.numOfPlayers});
+  final int numOfPlayers;
+
   @override
-  State<StatefulWidget> createState() {
-    return _DiceGameState();
-  }
+  State<DiceGame> createState() => _DiceGameState();
 }
 
-int dice1 = 1;
-int dice2 = 1;
-int dice3 = 1;
-int dice4 = 1;
-
 class _DiceGameState extends State<DiceGame> {
+  int dice1 = 1;
+  int dice2 = 1;
+
   Map<int, int> playerScores = {1: 0, 2: 0, 3: 0, 4: 0};
 
-  void updateScores() {
-    Map<int, int> rolls = {
-      1: getDiceNumber(activeDice1),
-      2: getDiceNumber(activeDice2),
-      3: getDiceNumber(activeDice3),
-      4: getDiceNumber(activeDice4),
-    };
+  String diceImage(int number) {
+    return 'assets/images/dice-$number.png';
+  }
 
-    int maxRoll = rolls.values.reduce(max);
-    List<int> winners = rolls.entries
-        .where((entry) => entry.value == maxRoll)
-        .map((entry) => entry.key)
-        .toList();
-
+  // Current turn display
+  int turn = 1;
+  // Next player's turn
+  // This function updates the turn to the next player
+  void nextTurn(int currentPlayer) {
+    int nextPlayer = currentPlayer % widget.numOfPlayers + 1;
     setState(() {
-      for (var player in winners) {
-        playerScores[player] = playerScores[player]! + 1;
+      turn = nextPlayer;
+    });
+  }
+
+  //update the score for the current player and check if they have won
+  // If a player reaches 120 points, navigate to the result screen
+  void updateScore(int player) {
+    int points = rollDice();
+    setState(() {
+      playerScores[player] = playerScores[player]! + points;
+      //check if the player has won
+      if (playerScores[player]! >= 120) {
+        // switch to result screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ResultScreen(
+              numOfPlayers: widget.numOfPlayers,
+              player1: 'Player 1',
+              score1: playerScores[1]!,
+              player2: widget.numOfPlayers > 1 ? 'Player 2' : null,
+              score2: widget.numOfPlayers > 1 ? playerScores[2] : null,
+              player3: widget.numOfPlayers > 2 ? 'Player 3' : null,
+              score3: widget.numOfPlayers > 2 ? playerScores[3] : null,
+              player4: widget.numOfPlayers > 3 ? 'Player 4' : null,
+              score4: widget.numOfPlayers > 3 ? playerScores[4] : null,
+              winnerName: 'Player $player',
+            ),
+          ),
+        );
       }
     });
   }
 
-  int getDiceNumber(String path) {
-    return int.parse(path.replaceAll(RegExp(r'[^0-9]'), ''));
+  // Roll the dice and return the points
+  int rollDice() {
+    int points = 0;
+    setState(() {
+      dice1 = randomizer.nextInt(6) + 1;
+      dice2 = randomizer.nextInt(6) + 1;
+
+      points = dice1 + dice2;
+    });
+    nextTurn(turn);
+    return points;
   }
 
-  var activeDice1 = 'assets/images/dice-1.png';
-  var activeDice2 = 'assets/images/dice-1.png';
-  var activeDice3 = 'assets/images/dice-1.png';
-  var activeDice4 = 'assets/images/dice-1.png';
-
-  int? numOfPlayers = 1;
-
-  void changeNumOfPlayers(int? value) {
+  //Reset the game
+  void resetGame() {
     setState(() {
-      numOfPlayers = value;
+      dice1 = 1;
+      dice2 = 1;
       playerScores = {1: 0, 2: 0, 3: 0, 4: 0};
-    });
-  }
-
-  void rollDices() {
-    setState(() {
-      if (numOfPlayers == 1) {
-        dice1 = randomizer.nextInt(6) + 1;
-        activeDice1 = 'assets/images/dice-$dice1.png';
-      }
-      if (numOfPlayers == 2) {
-        dice1 = randomizer.nextInt(6) + 1;
-        activeDice1 = 'assets/images/dice-$dice1.png';
-        dice2 = randomizer.nextInt(6) + 1;
-        activeDice2 = 'assets/images/dice-$dice2.png';
-      }
-      if (numOfPlayers == 3) {
-        dice1 = randomizer.nextInt(6) + 1;
-        activeDice1 = 'assets/images/dice-$dice1.png';
-        dice2 = randomizer.nextInt(6) + 1;
-        activeDice2 = 'assets/images/dice-$dice2.png';
-        dice3 = randomizer.nextInt(6) + 1;
-        activeDice3 = 'assets/images/dice-$dice3.png';
-      }
-      if (numOfPlayers == 4) {
-        dice1 = randomizer.nextInt(6) + 1;
-        activeDice1 = 'assets/images/dice-$dice1.png';
-        dice2 = randomizer.nextInt(6) + 1;
-        activeDice2 = 'assets/images/dice-$dice2.png';
-        dice3 = randomizer.nextInt(6) + 1;
-        activeDice3 = 'assets/images/dice-$dice3.png';
-        dice4 = randomizer.nextInt(6) + 1;
-        activeDice4 = 'assets/images/dice-$dice4.png';
-      }
-
-      Map<int, int> rolledValues = {1: dice1, 2: dice2, 3: dice3, 4: dice4};
-
-      int highestValue = 0;
-      List<int> winners = [];
-
-      for (int i = 1; i <= (numOfPlayers ?? 1); i++) {
-        int value = rolledValues[i]!;
-        if (value > highestValue) {
-          highestValue = value;
-          winners = [i];
-        } else if (value == highestValue) {
-          winners.add(i);
-        }
-      }
-
-      for (int player in winners) {
-        playerScores[player] = (playerScores[player] ?? 0) + 1;
-      }
+      turn = 1;
     });
   }
 
   @override
-  Widget build(context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 12, top: 12, bottom: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: List.generate(numOfPlayers ?? 1, (index) {
-                final player = index + 1;
-                return Text(
-                  'Player $player: ${playerScores[player]} pts',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 243, 238, 250),
+      body: Column(
+        children: [
+          // Player scores sidebar at top
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            color: Colors.deepPurple.shade50,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(widget.numOfPlayers, (index) {
+                int player = index + 1;
+                return Column(
+                  children: [
+                    Text(
+                      "P$player",
+                      style: GoogleFonts.coiny(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w100,
+                        color: const Color.fromARGB(255, 0, 0, 0),
+                      ),
+                    ),
+                    Text(
+                      "${playerScores[player]} pts",
+                      style: const TextStyle(color: Colors.black54),
+                    ),
+                  ],
                 );
               }),
             ),
           ),
-        ),
-        if (numOfPlayers == 1)
+
+          const SizedBox(height: 20),
+
+          //Points needed to win
+          Text(
+            "Points needed to win: 120",
+            style: GoogleFonts.coiny(
+              fontSize: 20,
+              color: Colors.deepPurple.shade700,
+            ),
+            textAlign: TextAlign.center,
+          ),
+
+          // Dice Area
+          Expanded(
+            child: Center(
+              child: SizedBox(
+                width: double.infinity,
+                height: 200,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(diceImage(dice1), height: 170),
+                    const SizedBox(width: 20),
+                    Image.asset(diceImage(dice2), height: 170),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Display current turn
+          Text(
+            "Player $turn's Turn",
+            style: GoogleFonts.coiny(
+              fontSize: 24,
+              color: Colors.deepPurple.shade700,
+            ),
+          ),
+          const SizedBox(height: 60),
+
+          // Roll Button
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(activeDice1, width: 200),
-              SizedBox(height: 8),
-              Text('Player 1'),
-            ],
-          ),
-
-        if (numOfPlayers == 2)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(activeDice1, width: 150),
-              SizedBox(height: 8),
-              Text('Player 1'),
-              SizedBox(width: 20),
-              Image.asset(activeDice2, width: 150),
-              SizedBox(height: 8),
-              Text('Player 2'),
-            ],
-          ),
-
-        if (numOfPlayers == 3)
-          Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(activeDice1, width: 130),
-                  SizedBox(height: 8),
-                  Text('Player 1'),
-                  SizedBox(width: 20),
-                  Image.asset(activeDice2, width: 130),
-                  SizedBox(height: 8),
-                  Text('Player 2'),
-                ],
+              ElevatedButton(
+                onPressed: () {
+                  updateScore(turn);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 16,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  "Roll Dice",
+                  style: GoogleFonts.coiny(fontSize: 20, color: Colors.white),
+                ),
               ),
-              SizedBox(height: 20),
-              Image.asset(activeDice3, width: 130),
-              SizedBox(height: 8),
-              Text('Player 3'),
-            ],
-          ),
 
-        if (numOfPlayers == 4)
-          Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(activeDice1, width: 100),
-                  SizedBox(height: 8),
-                  Text('Player 1'),
-                  SizedBox(width: 20),
-                  Image.asset(activeDice2, width: 100),
-                  SizedBox(height: 8),
-                  Text('Player 2'),
-                ],
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(activeDice3, width: 100),
-                  SizedBox(height: 8),
-                  Text('Player 3'),
-                  SizedBox(width: 20),
-                  Image.asset(activeDice4, width: 100),
-                  SizedBox(height: 8),
-                  Text('Player 4'),
-                ],
+              const SizedBox(width: 20),
+              TextButton.icon(
+                onPressed: resetGame,
+                label: Text(
+                  "Reset Game",
+                  style: GoogleFonts.coiny(
+                    fontSize: 20,
+                    color: Colors.deepPurple,
+                  ),
+                ),
+                icon: Icon(Icons.refresh, color: Colors.deepPurple),
               ),
             ],
           ),
-        const SizedBox(height: 50),
-        DropdownButton<int>(
-          value: numOfPlayers,
-          items: const [
-            DropdownMenuItem(value: 1, child: Text("1 Player")),
-            DropdownMenuItem(value: 2, child: Text("2 Players")),
-            DropdownMenuItem(value: 3, child: Text("3 Players")),
-            DropdownMenuItem(value: 4, child: Text("4 Players")),
-          ],
-          onChanged: changeNumOfPlayers,
-        ),
-        TextButton(onPressed: rollDices, child: Text("Roll Dice")),
-      ],
+        ],
+      ),
     );
   }
 }
