@@ -1,6 +1,7 @@
 import 'package:dice_roll_game/dice_game.dart'; // Ensure this file exists and contains the DiceGame widget implementation.
 // import 'package:dice_roll_game/leaderboard.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({required this.numOfPlayers, super.key});
@@ -17,7 +18,7 @@ class _GameScreenState extends State<GameScreen> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 243, 238, 250),
       appBar: AppBar(
-        title: const Text('Dice Battle!'),
+        title: Text('Dice Battle!', style: GoogleFonts.coiny(fontSize: 24)),
         actions: [
           // Logo on the right side of the app bar
           Padding(
@@ -31,7 +32,11 @@ class _GameScreenState extends State<GameScreen> {
           ),
         ],
       ),
-      body: Center(child: DiceGame(numOfPlayers: numOfPlayers)),
+      body: SizedBox(
+        height: 700,
+        width: double.infinity,
+        child: Center(child: DiceGame(numOfPlayers: numOfPlayers)),
+      ),
     );
   }
 }

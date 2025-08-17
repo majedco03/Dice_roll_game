@@ -1,5 +1,7 @@
+import 'package:dice_roll_game/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:google_fonts/google_fonts.dart';
 
 final randomizer = Random();
 
@@ -14,8 +16,6 @@ class DiceGame extends StatefulWidget {
 class _DiceGameState extends State<DiceGame> {
   int dice1 = 1;
   int dice2 = 1;
-  int dice3 = 1;
-  int dice4 = 1;
 
   Map<int, int> playerScores = {1: 0, 2: 0, 3: 0, 4: 0};
 
@@ -23,53 +23,58 @@ class _DiceGameState extends State<DiceGame> {
     return 'assets/images/dice-$number.png';
   }
 
-  void rollDice() {
+  // Current turn display
+  int turn = 1;
+  // Next player's turn
+  // This function updates the turn to the next player
+  void nextTurn(int currentPlayer) {
+    int nextPlayer = currentPlayer % widget.numOfPlayers + 1;
     setState(() {
-      if (widget.numOfPlayers >= 1) {
-        dice1 = randomizer.nextInt(6) + 1;
-      }
-      if (widget.numOfPlayers >= 2) {
-        dice2 = randomizer.nextInt(6) + 1;
-      }
-      if (widget.numOfPlayers >= 3) {
-        dice3 = randomizer.nextInt(6) + 1;
-      }
-      if (widget.numOfPlayers == 4) {
-        dice4 = randomizer.nextInt(6) + 1;
-      }
+      turn = nextPlayer;
+    });
+  }
 
-      Map<int, int> rolls = {1: dice1, 2: dice2, 3: dice3, 4: dice4};
-
-      int highest = 0;
-      List<int> winners = [];
-
-      for (int i = 1; i <= widget.numOfPlayers; i++) {
-        int roll = rolls[i]!;
-        if (roll > highest) {
-          highest = roll;
-          winners = [i];
-        } else if (roll == highest) {
-          winners.add(i);
-        }
-      }
-
-      for (var player in winners) {
-        playerScores[player] = (playerScores[player] ?? 0) + 1;
+  //update the score for the current player
+  void updateScore(int player) {
+    int points = rollDice();
+    setState(() {
+      playerScores[player] = playerScores[player]! + points;
+      //check if the player has won
+      if (playerScores[player]! >= 120) {
+        // switch to result screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            //TODO: Create a ResultScreen widget to display the winner
+            // Right now, it just goes back to the home screen
+            builder: (context) => HomeScreen(),
+          ),
+        );
       }
     });
   }
 
-  Widget buildDice(int number, String label, double size) {
-    return Column(
-      children: [
-        Image.asset(diceImage(number), width: size),
-        const SizedBox(height: 6),
-        Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-        ),
-      ],
-    );
+  // Roll the dice and return the points
+  int rollDice() {
+    int points = 0;
+    setState(() {
+      dice1 = randomizer.nextInt(6) + 1;
+      dice2 = randomizer.nextInt(6) + 1;
+
+      points = dice1 + dice2;
+    });
+    nextTurn(turn);
+    return points;
+  }
+
+  //Reset the game
+  void resetGame() {
+    setState(() {
+      dice1 = 1;
+      dice2 = 1;
+      playerScores = {1: 0, 2: 0, 3: 0, 4: 0};
+      turn = 1;
+    });
   }
 
   @override
@@ -91,9 +96,10 @@ class _DiceGameState extends State<DiceGame> {
                   children: [
                     Text(
                       "P$player",
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                      style: GoogleFonts.coiny(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w100,
+                        color: const Color.fromARGB(255, 0, 0, 0),
                       ),
                     ),
                     Text(
@@ -108,81 +114,81 @@ class _DiceGameState extends State<DiceGame> {
 
           const SizedBox(height: 20),
 
+          //Points needed to win
+          Text(
+            "Points needed to win: 120",
+            style: GoogleFonts.coiny(
+              fontSize: 20,
+              color: Colors.deepPurple.shade700,
+            ),
+            textAlign: TextAlign.center,
+          ),
+
           // Dice Area
           Expanded(
             child: Center(
-              child: widget.numOfPlayers == 1
-                  ? buildDice(dice1, "Player 1", 180)
-                  : widget.numOfPlayers == 2
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        buildDice(dice1, "Player 1", 150),
-                        const SizedBox(width: 30),
-                        buildDice(dice2, "Player 2", 150),
-                      ],
-                    )
-                  : widget.numOfPlayers == 3
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            buildDice(dice1, "Player 1", 130),
-                            const SizedBox(width: 30),
-                            buildDice(dice2, "Player 2", 130),
-                          ],
-                        ),
-                        const SizedBox(height: 30),
-                        buildDice(dice3, "Player 3", 130),
-                      ],
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            buildDice(dice1, "Player 1", 120),
-                            const SizedBox(width: 20),
-                            buildDice(dice2, "Player 2", 120),
-                          ],
-                        ),
-                        const SizedBox(height: 30),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            buildDice(dice3, "Player 3", 120),
-                            const SizedBox(width: 20),
-                            buildDice(dice4, "Player 4", 120),
-                          ],
-                        ),
-                      ],
-                    ),
+              child: SizedBox(
+                width: double.infinity,
+                height: 200,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(diceImage(dice1), height: 170),
+                    const SizedBox(width: 20),
+                    Image.asset(diceImage(dice2), height: 170),
+                  ],
+                ),
+              ),
             ),
           ),
 
-          // Roll Button
-          Container(
-            margin: const EdgeInsets.only(bottom: 30),
-            child: ElevatedButton(
-              onPressed: rollDice,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 16,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text(
-                "Roll Dice",
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
+          // Display current turn
+          Text(
+            "Player $turn's Turn",
+            style: GoogleFonts.coiny(
+              fontSize: 24,
+              color: Colors.deepPurple.shade700,
             ),
+          ),
+          const SizedBox(height: 60),
+
+          // Roll Button
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  updateScore(turn);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 16,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  "Roll Dice",
+                  style: GoogleFonts.coiny(fontSize: 20, color: Colors.white),
+                ),
+              ),
+
+              const SizedBox(width: 20),
+              TextButton.icon(
+                onPressed: resetGame,
+                label: Text(
+                  "Reset Game",
+                  style: GoogleFonts.coiny(
+                    fontSize: 20,
+                    color: Colors.deepPurple,
+                  ),
+                ),
+                icon: Icon(Icons.refresh, color: Colors.deepPurple),
+              ),
+            ],
           ),
         ],
       ),
